@@ -3,7 +3,7 @@ const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
 let prefix = '!'
 client.on('ready', () => {
-    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + 'servers',{ type: 'PLAYING' })
+    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
 });
 client.on('guildCreate', (guild) => {
@@ -18,11 +18,9 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     if ('rainbow'.includes(command)) {
-        if (!message.guild.roles.find("name", "Rainbow")) {
-            message.guild.createRole({
-                name: 'Rainbow'
-            })
-        }
+        message.guild.createRole({
+            name: 'Rainbow'
+        })
         message.channel.send('Роль Rainbow создана и запущена, теперь дайте ее тем участникам которые этой роли достойны');
         let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
         let role = message.guild.roles.find("name", "Rainbow");
