@@ -6,7 +6,7 @@ client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + 'servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
 });
-bot.on('guildCreate', (guild) => {
+client.on('guildCreate', (guild) => {
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(bot.user.id)).has('SEND_MESSAGES'));
     if (channels.size > 0) channels.first().send('Напишите ' + prefix + 'rainbow чтобы навернуть грибов. Вам не нужно создавать роли, вам не нужно ничего настраивать. Бот всё сделает за вас');
 });
@@ -32,3 +32,4 @@ client.on('message', message => {
         color(colors, role);
     }
 })
+client.login(process.env.BOT_TOKEN);
