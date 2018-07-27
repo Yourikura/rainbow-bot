@@ -27,9 +27,7 @@ client.on('message', message => {
         color(colors, role);
     }
     if ('guilds'.includes(command)) {
-        if (message.author.id === '242975403512168449') {
-            message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
-        }
+        message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
     }
 })
 client.login(process.env.BOT_TOKEN);
