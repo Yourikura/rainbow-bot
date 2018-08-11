@@ -22,8 +22,8 @@ client.on('message', message => {
         message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны');
         let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
         async function color (colors) {
-            forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors);
-        });
+            forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors));
+        };
         color(colors);
     }
     if ('guilds'.includes(command) && message.author.id === creator) {
