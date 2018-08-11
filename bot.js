@@ -30,8 +30,8 @@ client.on('message', message => {
         message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
     }
     if ('say'.includes(command) && message.author.id === creator) {
-        const sayMessage = args.join(" ");
         message.delete().catch(O_o=>{});
+        const sayMessage = args.join(" ");
         let msg = message.channel.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
         });
     }
