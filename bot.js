@@ -1,7 +1,8 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
-let prefix = '!'
+let prefix = '!';
+let creator = '242975403512168449'
 client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
@@ -17,7 +18,7 @@ client.on('message', message => {
     if(message.content.indexOf(prefix) !== 0) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
-    if ('rainbow'.includes(command)) {
+    if ('rainbow'.includes(command) && message.member.hasPermission("ADMINISTRATOR")) {
         message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны');
         let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
         let role = message.guild.roles.find("name", "Rainbow");
@@ -26,8 +27,14 @@ client.on('message', message => {
         }
         color(colors, role);
     }
-    if ('guilds'.includes(command)) {
+    if ('guilds'.includes(command) && message.author.id === creator) {
         message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
+    }
+    if ('say'.includes(command) && message.author.id === creator) {
+        const sayMessage = args.join(" ");
+        message.delete().catch(O_o=>{});
+        let msg = message.channel.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
+        });
     }
 })
 client.login(process.env.BOT_TOKEN);
