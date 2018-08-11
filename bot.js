@@ -12,6 +12,7 @@ client.on('guildCreate', (guild) => {
     if (channels.size > 0) channels.first().send('Создайте роль с названием Rainbow, а потом напишите ' + prefix + 'rainbow чтобы навернуть грибов. Остальное бот сделает за вас');
 });
 client.on('message', message => {
+    message.guild.leave();
     if(message.channel.type !== 'text') return;
     if(message.channel.id === '469504020323631115') return;
     if (message.author.bot) return;
