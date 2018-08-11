@@ -30,12 +30,38 @@ client.on('message', message => {
         message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
     }
     if ('say'.includes(command) && message.author.id === creator) {
-        let chann = message.mentions.channels.first();
-        if (!chann) chann === message.channel;
-        const sayMessage = args.join(" ").replace(chann, '');
+        const sayMessage = args.join(" ");
         message.delete().catch(O_o=>{});
-        let msg = chann.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
+        let msg = message.channel.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
         });
     }
+    if(['av', 'avatar', 'ав', 'аватар', 'ava', 'ава'].includes(command)) {
+            let user = message.mentions.members.first();
+            if (!user) user = message.member;
+            let av = new Discord.RichEmbed()
+                .setImage(user.user.avatarURL)
+                .setDescription("**Аватар пользователя **" + user)
+                .setColor("af00ff")
+                .setFooter("Ныркаман")
+                .setTimestamp();
+            message.channel.send({embed: av});
+            message.delete();
+    }
+    if(['send'].includes(command)) {
+            let user = message.mentions.members.first();
+            if (message.member.hasPermission("MANAGE_MESSAGES")) {
+                if (!user) {
+                    message.delete
+                    message.reply('Ошибка. Причина: **Не указан получатель сообщения**');
+                    return
+                }
+                const sendMessage = args.join(" ");
+                let msg = user.send(sendMessage.replace(user, '')).catch(()=>{message.reply('Ошибка. Причина: **Не указано сообщение**');
+                })
+                message.delete().catch(O_o=>{});
+            } else {
+                message.channel.send(message.author + ', Ошибка. Причина: **Вы не можете использовать команду send, вы должны иметь право `Управлять сообщениями`**');
+            }
+        }
 })
 client.login(process.env.BOT_TOKEN);
