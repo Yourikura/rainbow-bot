@@ -21,11 +21,10 @@ client.on('message', message => {
     if ('rainbow'.includes(command) && message.member.hasPermission("ADMINISTRATOR")) {
         message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны');
         let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
-        let role = message.guild.roles.find("name", "Rainbow");
-        async function color (colors, role) {
-            forEachTimeout(colors, (color) => {role.setColor(color)}, 1500).then(() => color(colors, role));
+        async function color (colors) {
+            forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors);
         }
-        color(colors, role);
+        color(colors);
     }
     if ('guilds'.includes(command) && message.author.id === creator) {
         message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
