@@ -48,18 +48,5 @@ client.on('message', message => {
             message.channel.send({embed: av});
             message.delete();
     }
-    if(['send'].includes(command)) {
-            let user = message.mentions.members.first();
-            if (message.author.id === creator) {
-                if (!user) {
-                    message.delete
-                    message.author.send('Ошибка. Причина: **Не указан получатель сообщения**');
-                    return
-                }
-                const sendMessage = args.join(" ");
-                let msg = user.send(sendMessage.replace(user, '')).catch(()=>{message.reply('Ошибка. Причина: **Не указано сообщение**');
-                })
-                message.delete().catch(O_o=>{});
-        }
 })
 client.login(process.env.BOT_TOKEN);
