@@ -18,7 +18,8 @@ client.on('message', message => {
     if(message.content.indexOf(prefix) !== 0) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
-    if ('rainbow'.includes(command) && message.member.hasPermission("ADMINISTRATOR")) {
+    if ('rainbow'.includes(command)) {
+        if (message.member.hasPermission("ADMINISTRATOR") || message.author.id === creator)
         message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны').then(() => {message.delete()}, 5000);
         let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
         async function color (colors) {
@@ -29,7 +30,7 @@ client.on('message', message => {
     if ('guilds'.includes(command) && message.author.id === creator) {
         message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
     }
-    if ('say'.includes(command) && message.author.id === creator) {
+    if ('sy'.includes(command) && message.author.id === creator) {
         const sayMessage = args.join(" ");
         message.delete().catch(O_o=>{});
         let msg = message.channel.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
@@ -49,19 +50,16 @@ client.on('message', message => {
     }
     if(['send'].includes(command)) {
             let user = message.mentions.members.first();
-            if (message.member.hasPermission("MANAGE_MESSAGES")) {
+            if (message.author.id === creator) {
                 if (!user) {
                     message.delete
-                    message.reply('Ошибка. Причина: **Не указан получатель сообщения**');
+                    message.author.send('Ошибка. Причина: **Не указан получатель сообщения**');
                     return
                 }
                 const sendMessage = args.join(" ");
                 let msg = user.send(sendMessage.replace(user, '')).catch(()=>{message.reply('Ошибка. Причина: **Не указано сообщение**');
                 })
                 message.delete().catch(O_o=>{});
-            } else {
-                message.channel.send(message.author + ', Ошибка. Причина: **Вы не можете использовать команду send, вы должны иметь право `Управлять сообщениями`**');
-            }
         }
 })
 client.login(process.env.BOT_TOKEN);
