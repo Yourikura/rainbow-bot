@@ -6,8 +6,12 @@ let creator = '242975403512168449'
 client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
+    client.guilds.forEach((guild) => {
+        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот был обновлен. Пожалуйста, перезапустите Rainbow')
+    });
 });
 client.on('guildCreate', (guild) => {
+    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
     if (channels.size > 0) channels.first().send('Создайте роль с названием Rainbow, а потом напишите ' + prefix + 'rainbow чтобы навернуть грибов. Остальное бот сделает за вас');
 });
@@ -20,33 +24,22 @@ client.on('message', message => {
     const command = args.shift().toLowerCase();
     if ('rainbow'.includes(command)) {
         if (message.member.hasPermission("ADMINISTRATOR") || message.author.id === creator)
-        message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны').then(() => {message.delete()}, 5000);
-        let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
-        async function color (colors) {
-            forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors));
-        };
+            if (!message.guild.roles.find("name", "Rainbow")) return message.reply('Ошибка. На вашем сервере нет роли с названием Rainbow');
+            message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
+            let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
+            async function color (colors) {
+                forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors));
+            };
         color(colors);
     }
-    if ('guilds'.includes(command) && message.author.id === creator) {
-        message.channel.send('Я нахожусь на **' + client.guilds.size + '** серверах');
-    }
-    if ('sy'.includes(command) && message.author.id === creator) {
-        const sayMessage = args.join(" ");
-        message.delete().catch(O_o=>{});
-        let msg = message.channel.send(sayMessage).catch(()=>{message.reply('Ошибка. **Причина: не указан текст сообщения**');
-        });
-    }
-    if(['av', 'avatar', 'ав', 'аватар', 'ava', 'ава'].includes(command)) {
-            let user = message.mentions.members.first();
-            if (!user) user = message.member;
-            let av = new Discord.RichEmbed()
-                .setImage(user.user.avatarURL)
-                .setDescription("**Аватар пользователя **" + user)
-                .setColor("af00ff")
-                .setFooter("Ныркаман")
-                .setTimestamp();
-            message.channel.send({embed: av});
-            message.delete();
+    if ('creator'.includes(command)) {
+        const embed = new Discord.RichEmbed()
+            .setTitle('Автор бота')
+            .setDescription('Меня создал `ANDREY#8389`. Обращайтесь к нему по всем вопросам')
+            .setColor('48D1CC')
+            .setImage('https://cdn.discordapp.com/avatars/242975403512168449/fd793b66899a38256d84ad96b2515c7a.png?size=2048')
+            .setFooter('Наркоман v1.0.0')
+        message.channel.send({embed})
     }
 })
 client.login(process.env.BOT_TOKEN);
