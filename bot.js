@@ -11,7 +11,7 @@ client.on('ready', () => {
     });
 });
 client.on('guildCreate', (guild) => {
-    client.fetchUser('242975403512168449').then (user => user.send('Я пришел на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' ' + guild.ownerID + '**\nID: ** guild.id + '**').catch(() => {console.log('Ошибка при отправки сообщения о пополнении')}));
+    client.fetchUser('242975403512168449').then (user => user.send('Я пришел на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' ' + guild.ownerID + '**\nID: ** guild.id + '**').catch(() => {console.log('Ошибка при отправки сообщения о пополнении')})));
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
     if (channels.size > 0) channels.first().send('Создайте роль с названием Rainbow, а потом напишите ' + prefix + 'rainbow чтобы навернуть грибов. Остальное бот сделает за вас');
