@@ -7,7 +7,7 @@ client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
     client.guilds.forEach((guild) => {
-        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Произошла неизвестная ошибка. Пожалуйста, перезапустите Rainbow. Если эта ошибка произошла после написания одной из команд, то уведомите об этом `ANDREY#8389`')
+        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот был обновлен. Баги исправлены')
     });
 });
 client.on('guildCreate', (guild) => {
