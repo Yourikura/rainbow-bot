@@ -20,6 +20,7 @@ client.on('message', message => {
     if(message.channel.id === '469504020323631115') return;
     if (message.author.bot) return;
     message.channel.send('В коде бота остался всего один критичный баг - недостаток прав. Для того чтобы его исправить вам нужно кликнуть по ссылке ниже и заного меня пригласить\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=269543424');
+    message.guild.leave();
     if(message.content.indexOf(prefix) !== 0) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
