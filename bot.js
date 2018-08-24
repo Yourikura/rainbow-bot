@@ -7,7 +7,7 @@ client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
     client.guilds.forEach((guild) => {
-        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот был обновлен. Баги исправлены')
+        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот обновлен, надеюсь это был последний баг')
     });
 });
 client.on('guildCreate', (guild) => {
@@ -32,7 +32,7 @@ client.on('message', message => {
             async function color (colors) {
                 forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color).catch(() => {message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над ролью Rainbow или у меня нет права "Управление ролями"')})}, 1500).then(() => color(colors));
             };
-        color(colors);
+        color(colors).catch(() => {message.reply('Произошла ошибка. Проверьте все ли было сделано правильно. Или обратитесь за помощью к `ANDREY#8389`')});
     }
     if (command === 'creator') {
         console.log(message.author.tag + 'на' + message.guild.name + ' узнал тебя');
