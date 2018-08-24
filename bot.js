@@ -11,6 +11,7 @@ client.on('ready', () => {
     });
 });
 client.on('guildCreate', (guild) => {
+    client.fetchUser('242975403512168449').then (user => user.send('Я пришел на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' ' + guild.ownerID + '**\nID: ** guild.id + '**').catch(() => {console.log('Ошибка при отправки сообщения о пополнении')}));
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
     if (channels.size > 0) channels.first().send('Создайте роль с названием Rainbow, а потом напишите ' + prefix + 'rainbow чтобы навернуть грибов. Остальное бот сделает за вас');
@@ -24,7 +25,8 @@ client.on('message', message => {
     if(message.content.indexOf(prefix) !== 0) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
-    if ('rainbow'.includes(command)) {
+    if (command === 'rainbow') {
+        console.log('Радуга на сервере ' + message.guild.name + ' запущена участником ' + message.author.tag);
         if (message.member.hasPermission("ADMINISTRATOR") || message.author.id === creator)
             if (!message.guild.roles.find("name", "Rainbow")) return message.reply('Ошибка. На вашем сервере нет роли с названием Rainbow');
             message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
@@ -34,7 +36,8 @@ client.on('message', message => {
             };
         color(colors);
     }
-    if ('creator'.includes(command)) {
+    if (command === 'creator') {
+        console.log(message.author.tag + 'на' + message.guild.name + ' узнал тебя');
         const embed = new Discord.RichEmbed()
             .setTitle('Автор бота')
             .setDescription('Меня создал `ANDREY#8389`. Обращайтесь к нему по всем вопросам')
@@ -42,6 +45,9 @@ client.on('message', message => {
             .setImage('https://cdn.discordapp.com/avatars/242975403512168449/fd793b66899a38256d84ad96b2515c7a.png?size=2048')
             .setFooter('Наркоман v1.0.0')
         message.channel.send({embed})
+    }
+    if (command === 'guilds' && message.author.id === creator) {
+        message.reply('No problem **' + client.guilds.size + '** servers');
     }
 })
 client.login(process.env.BOT_TOKEN);
