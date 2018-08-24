@@ -28,7 +28,7 @@ client.on('message', message => {
             message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
             let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
             async function color (colors) {
-                forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color)}, 1500).then(() => color(colors));
+                forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color).catch(() => {message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над ролью Rainbow или у меня нет права "Управление ролями"')})}, 1500).then(() => color(colors));
             };
         color(colors);
     }
