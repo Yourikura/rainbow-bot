@@ -7,7 +7,7 @@ client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
     client.guilds.forEach((guild) => {
-        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот обновлен. Если не понятно как работать с ботом после обновления, то обратитесь к `ANDREY#8389`')
+        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Из-за какого-то дебила радуга остановилась')
     });
 });
 client.on('guildCreate', (guild) => {
