@@ -33,8 +33,9 @@ client.on('message', message => {
             let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
             async function color (colors) {
                 forEachTimeout(colors, (color) => {role.setColor(color).catch(() => {return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над радужной ролью, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500).then(() => color(colors));
-        }} else return message.reply('Ошибка, у вас нет права "Управление ролями"');
-        color(colors).catch(() => {return message.reply('')});
+            }
+            color(colors).catch(() => {return message.reply('')});
+        } else return message.reply('Ошибка, у вас нет права "Управление ролями"');
     }
     if (command === 'creator') {
         console.log(message.author.tag + 'на' + message.guild.name + ' узнал тебя');
