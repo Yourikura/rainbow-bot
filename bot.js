@@ -7,14 +7,14 @@ client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
     client.guilds.forEach((guild) => {
-        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот обновлен, добавлена защита от таких дебилов которые не умеют все правильно настраивать.')
+        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Бот обновлен. Если не понятно как работать с ботом после обновления, то обратитесь к `ANDREY#8389`')
     });
 });
 client.on('guildCreate', (guild) => {
     client.fetchUser('242975403512168449').then (user => user.send('Я пришел на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' ' + guild.ownerID + '**\nID: **' + guild.id + '**'));
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-    if (channels.size > 0) channels.first().send('Создайте роль с названием Rainbow, а потом напишите ' + prefix + 'rainbow чтобы навернуть грибов. ВАЖНО! Роль Rainbow должна быть ниже роли бота. У вас должно быть право администратора для того чтобы запустить радугу. У бота должно быть право "Управление ролями".');
+    if (channels.size > 0) channels.first().send('Напишите ' + prefix + ' rainbow <@роль> чтобы запустить радугу на любой роли которую захотите. Если роль содержит пробелы, то ничего работать не будет. Также, проверьте то что радужная роль находится под ролью бота');
 });
 client.on('message', message => {
     if(message.channel.type !== 'text') return;
@@ -24,15 +24,17 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     if (command === 'rainbow') {
-        console.log('Радуга на сервере ' + message.guild.name + ' запущена участником ' + message.author.tag);
-        if (message.member.hasPermission("MANAGE_ROLES") || message.author.id === creator)
-            if (!message.guild.roles.find("name", "Rainbow")) return message.reply('Ошибка. На вашем сервере нет роли с названием Rainbow');
-            message.channel.send('Роль Rainbow запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
+        let role = message.mentions.roles.first();
+        if (!role) return message.reply('Ошибка, не указана роль');
+        if (role.name.match(/ +/g)) return message.reply('Ошибка, название роли не должно содержать пробелов');
+        if (message.member.hasPermission("MANAGE_ROLES") || message.author.id === creator) {
+            console.log('Радуга на сервере ' + message.guild.name + ' запущена участником ' + message.author.tag);
+            message.channel.send('Радуга запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
             let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
             async function color (colors) {
-                forEachTimeout(colors, (color) => {message.guild.roles.find("name", "Rainbow").setColor(color).catch(() => {return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над ролью Rainbow, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500).then(() => color(colors));
-            };
-        color(colors).catch(() => {return message.reply('Произошла ошибка. Проверьте все ли было сделано правильно. Или обратитесь за помощью к `ANDREY#8389`')});
+                forEachTimeout(colors, (color) => {role.setColor(color).catch(() => {return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над радужной ролью, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500).then(() => color(colors));
+        } else return message.reply('Ошибка, у вас нет права "Управление ролями"');
+        color(colors).catch(() => {return message.reply('')});
     }
     if (command === 'creator') {
         console.log(message.author.tag + 'на' + message.guild.name + ' узнал тебя');
