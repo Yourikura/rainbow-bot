@@ -2,53 +2,63 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
 let prefix = '!';
-let creator = '242975403512168449'
+let stop = new Set();
+let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
 client.on('ready', () => {
-    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
-    console.log('Бот запущен успешно\n    Количество гильдий на которых присутствует бот: ' + client.guilds.size);
-    client.guilds.forEach((guild) => {
-        guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send('Из-за какого-то дебила радуга остановилась')
-    });
-});
+    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' });
+    console.log('Бот: Запущен\n' + 'Серверов: ' + client.guilds.size + '\nАвторизован как: ' + client.user.tag);
+})
 client.on('guildCreate', (guild) => {
-    client.fetchUser('242975403512168449').then (user => user.send('Я пришел на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' ' + guild.ownerID + '**\nID: **' + guild.id + '**'));
+    client.fetchUser('242975403512168449').then (user => user.send('Я **пришел** на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-    if (channels.size > 0) channels.first().send('Напишите ' + prefix + ' rainbow <@роль> чтобы запустить радугу на любой роли которую захотите. Если роль содержит пробелы, то ничего работать не будет. Также, проверьте то что радужная роль находится под ролью бота');
+    if (channels.size > 0) channels.first().send('Напишите ' + prefix + 'rainbow <@роль> чтобы запустить радугу на любой роли которую захотите. Если роль содержит пробелы, то ничего работать не будет. Также, проверьте то что радужная роль находится под ролью бота');
 });
+client.on('guildDelete', (guild) => {
+    client.fetchUser('242975403512168449').then (user => user.send('Я **покинул** сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '\nОснователь: ' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
+    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
+})
 client.on('message', message => {
-    if(message.channel.type !== 'text') return;
-    if(message.channel.id === '469504020323631115') return;
-    if (message.author.bot) return;
-    if(message.content.indexOf(prefix) !== 0) return;
+    if (message.author.bot) return
+    if (!message.content.startsWith(prefix)) return
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
+    async function rainbow (role, color) {
+        if (stop.has(message.guild.id)) return message.reply('Радуга отключена');
+        forEachTimeout(color, (color) => {
+            role.setColor(color).catch(() => {
+            return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над радужной ролью, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500)
+            .then(() => rainbow(role, colors));
+    }
+    if (command === 'stop') {
+        if (stop.has(message.guild.id)) return message.reply('Радуга и так не запущена');
+        stop.add(message.guild.id);
+        message.reply('Происходит остановка...');
+        console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
+    }
     if (command === 'rainbow') {
         let role = message.mentions.roles.first();
-        if (!role) return message.reply('Ошибка, не указана роль');
-        if (role.name.match(/ +/g)) return message.reply('Ошибка, название роли не должно содержать пробелов');
-        if (message.member.hasPermission("MANAGE_ROLES") || message.author.id === creator) {
-            console.log('Радуга на сервере ' + message.guild.name + ' запущена участником ' + message.author.tag);
-            message.channel.send('Радуга запущена, теперь дайте ее тем участникам которые этой роли достойны. Также, вы можете узнать моего создателя написав !creator').then(() => {message.delete()}, 5000);
-            let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
-            async function color (colors) {
-                forEachTimeout(colors, (color) => {role.setColor(color).catch(() => {return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над радужной ролью, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500).then(() => color(colors));
-            }
-            color(colors).catch(() => {return message.reply('')});
-        } else return message.reply('Ошибка, у вас нет права "Управление ролями"');
+        if (!role) return message.reply('Вы не упомянули роль');
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+        if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов');
+        if (message.guild.me.highestRole.position <= role.position) return message.reply('У меня недостаточно прав');
+        if (stop.has(message.guild.id)) stop.delete(message.guild.id)
+        rainbow(role, colors);
+        console.log(message.author.tag + ' включил радугу на ' + message.guild.name);
+        message.channel.send('Радуга успешно включена. Другие команды:\n**!stop\n!creator\n!invite\n!bug <Описание бага>**');
     }
-    if (command === 'creator') {
-        console.log(message.author.tag + 'на' + message.guild.name + ' узнал тебя');
-        const embed = new Discord.RichEmbed()
-            .setTitle('Автор бота')
-            .setDescription('Меня создал `ANDREY#8389`. Обращайтесь к нему по всем вопросам')
-            .setColor('48D1CC')
-            .setImage('https://cdn.discordapp.com/avatars/242975403512168449/fd793b66899a38256d84ad96b2515c7a.png?size=2048')
-            .setFooter('Наркоман v1.0.0')
-        message.channel.send({embed})
+    if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
+    if (command === 'mass-say' && message.author.id === '242975403512168449') {
+        client.guilds.forEach((guild) => {
+            let msg = args.join(" ");
+            guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send(msg)
+        });
     }
-    if (command === 'guilds' && message.author.id === creator) {
-        message.reply('No problem **' + client.guilds.size + '** servers');
+    if (command === 'bug') {
+        if (!args[0]) return message.reply('Не указан баг');
+        let bug = args.join(" ");
+        client.fetchUser('242975403512168449').then (user => user.send('Пользователь ' + message.author.tag + ' (' + message.author + ') ' + '(' + message.author.id + ')' + ' Отправил баг:\n\n**' + bug + '**'));
+        message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали бред в !bug, то вам безвозвратно отключат все команды бота!')
     }
-})
+});
 client.login(process.env.BOT_TOKEN);
