@@ -3,6 +3,7 @@ const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
 let prefix = '!';
 let stop = new Set();
+let rainb = new Set();
 let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
 client.on('ready', () => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' });
@@ -31,34 +32,37 @@ client.on('message', message => {
             .then(() => rainbow(role, colors));
     }
     if (command === 'stop') {
-        if (stop.has(message.guild.id)) return message.reply('Радуга и так не запущена');
+        if (stop.has(message.guild.id)) return message.reply('Радуга и так не запущена').catch();
         stop.add(message.guild.id);
-        message.reply('Происходит остановка...');
+        message.reply('Происходит остановка...').catch();
         console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
     }
     if (command === 'rainbow') {
         let role = message.mentions.roles.first();
-        if (!role) return message.reply('Вы не упомянули роль');
-        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-        if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов');
-        if (message.guild.me.highestRole.position <= role.position) return message.reply('У меня недостаточно прав');
+        if (!role) return message.reply('Вы не упомянули роль').catch();
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав').catch();
+        if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов').catch();
+        if (message.guild.me.highestRole.position <= role.position) return message.reply('У меня недостаточно прав').catch();
         if (stop.has(message.guild.id)) stop.delete(message.guild.id)
-        rainbow(role, colors);
+        rainbow(role, colors).catch(( => {message.reply('Произошла ошибка. Обратитесь к `ANDREY#8389` за помощью').catch();}));
         console.log(message.author.tag + ' включил радугу на ' + message.guild.name);
-        message.channel.send('Радуга успешно включена. Другие команды:\n**!stop\n!creator\n!invite\n!bug <Описание бага>**');
+        message.channel.send('Радуга успешно включена. Другие команды:\n**!stop\n!creator\n!invite\n!bug <Описание бага>**').catch();
     }
-    if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
+    if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448').catch();
     if (command === 'mass-say' && message.author.id === '242975403512168449') {
         client.guilds.forEach((guild) => {
             let msg = args.join(" ");
-            guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send(msg)
+            guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send(msg).catch();
         });
     }
     if (command === 'bug') {
         if (!args[0]) return message.reply('Не указан баг');
         let bug = args.join(" ");
         client.fetchUser('242975403512168449').then (user => user.send('Пользователь ' + message.author.tag + ' (' + message.author + ') ' + '(' + message.author.id + ')' + ' Отправил баг:\n\n**' + bug + '**'));
-        message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали бред в !bug, то вам безвозвратно отключат все команды бота!')
+        message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали бред в !bug, то вам безвозвратно отключат все команды бота!').catch();
+    }
+    if (command === 'creator) {
+        message.channel.send('`ANDREY#8389`').catch();
     }
 });
 client.login(process.env.BOT_TOKEN);
