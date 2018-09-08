@@ -32,7 +32,7 @@ client.on('message', message => {
             .then(() => rainbow(role, colors));
     }
     if (command === 'stop') {
-        if (stop.has(message.guild.id)) return message.reply('Радуга и так не запущена').catch();
+        if (stop.has(message.guild.id)) return;
         stop.add(message.guild.id);
         message.reply('Происходит остановка...').catch();
         console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
