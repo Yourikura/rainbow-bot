@@ -39,6 +39,7 @@ client.on('message', message => {
     }
     if (command === 'rainbow') {
         let role = message.mentions.roles.first();
+        if (rainb.has(message.guild.id) return message.reply('1 Сервер - 1 Радуга');
         if (!role) return message.reply('Вы не упомянули роль').catch();
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав').catch();
         if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов').catch();
@@ -47,6 +48,7 @@ client.on('message', message => {
         rainbow(role, colors).catch(() => {message.reply('Произошла ошибка. Обратитесь к `ANDREY#8389` за помощью').catch();});
         console.log(message.author.tag + ' включил радугу на ' + message.guild.name);
         message.channel.send('Радуга успешно включена. Другие команды:\n**!stop\n!creator\n!invite\n!bug <Описание бага>**').catch();
+        rainb.add(message.guild.id);
     }
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448').catch();
     if (command === 'mass-say' && message.author.id === '242975403512168449') {
