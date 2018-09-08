@@ -39,7 +39,7 @@ client.on('message', message => {
     }
     if (command === 'rainbow') {
         let role = message.mentions.roles.first();
-        if (rainb.has(message.guild.id) return;
+        if (rainb.has(message.guild.id)) return;
         if (!role) return message.reply('Вы не упомянули роль').catch();
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав').catch();
         if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов').catch();
