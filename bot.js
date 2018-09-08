@@ -61,7 +61,7 @@ client.on('message', message => {
         client.fetchUser('242975403512168449').then (user => user.send('Пользователь ' + message.author.tag + ' (' + message.author + ') ' + '(' + message.author.id + ')' + ' Отправил баг:\n\n**' + bug + '**'));
         message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали бред в !bug, то вам безвозвратно отключат все команды бота!').catch();
     }
-    if (command === 'creator) {
+    if (command === 'creator') {
         message.channel.send('`ANDREY#8389`').catch();
     }
 });
