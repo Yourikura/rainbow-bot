@@ -44,7 +44,7 @@ client.on('message', message => {
         if (role.name.match(/ +/g)) return message.reply('Название роли не должно содержать пробелов').catch();
         if (message.guild.me.highestRole.position <= role.position) return message.reply('У меня недостаточно прав').catch();
         if (stop.has(message.guild.id)) stop.delete(message.guild.id)
-        rainbow(role, colors).catch(( => {message.reply('Произошла ошибка. Обратитесь к `ANDREY#8389` за помощью').catch();}));
+        rainbow(role, colors).catch(() => {message.reply('Произошла ошибка. Обратитесь к `ANDREY#8389` за помощью').catch();});
         console.log(message.author.tag + ' включил радугу на ' + message.guild.name);
         message.channel.send('Радуга успешно включена. Другие команды:\n**!stop\n!creator\n!invite\n!bug <Описание бага>**').catch();
     }
