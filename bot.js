@@ -72,5 +72,6 @@ client.on('message', message => {
     if (command === 'block' && message.author.id === creator) {
         blocked.push(args[0]);
         message.reply(args[0] + ' Заблокирован. Все заблокированные:\n' + blocked.join(", "));
+    }
 });
 client.login(process.env.BOT_TOKEN);
