@@ -22,9 +22,9 @@ client.on('guildDelete', (guild) => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
 })
 client.on('message', message => {
-    if (blocked.includes(message.author.id)) return message.reply('Вам отключили все команды бота по причине "Бред в !bug"');
     if (message.author.bot) return
     if (!message.content.startsWith(prefix)) return
+    if (blocked.includes(message.author.id)) return message.reply('Вам отключили все команды бота по причине "Бред в !bug"');
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     async function rainbow (role, color) {
