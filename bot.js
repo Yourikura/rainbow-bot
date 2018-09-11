@@ -8,7 +8,7 @@ let rainb = new Set();
 let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
 let blocked = ['444154125278511105', '318002925630652418', '434748832031703040'];
 client.on('ready', () => {
-    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' });
+    client.user.setActivity(/*prefix + 'rainbow | ' + client.guilds.size + ' servers'*/'Технические работы',{ type: 'PLAYING' });
     console.log('Бот: Запущен\n' + 'Серверов: ' + client.guilds.size + '\nАвторизован как: ' + client.user.tag);
 })
 client.on('guildCreate', (guild) => {
