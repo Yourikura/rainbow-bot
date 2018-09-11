@@ -42,7 +42,6 @@ client.on('message', message => {
         console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
     }
     if (command === 'rainbow') {
-        if (message.author.id !== creator) return;
         let role = message.mentions.roles.first();
         if (rainb.has(message.guild.id)) return;
         if (!role) return message.reply('Вы не упомянули роль').catch();
