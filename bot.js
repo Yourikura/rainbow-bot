@@ -1,12 +1,13 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
+const creator = '242975403512168449';
 let prefix = '!';
 let stop = new Set();
 let rainb = new Set();
 let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
 client.on('ready', () => {
-    client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' });
+    client.user.setActivity(/*prefix + 'rainbow | ' + client.guilds.size + ' servers'*/ 'Технические работы',{ type: 'PLAYING' });
     console.log('Бот: Запущен\n' + 'Серверов: ' + client.guilds.size + '\nАвторизован как: ' + client.user.tag);
 })
 client.on('guildCreate', (guild) => {
@@ -20,6 +21,7 @@ client.on('guildDelete', (guild) => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
 })
 client.on('message', message => {
+    if (message.author.id !== creator) return;
     if (message.author.bot) return
     if (!message.content.startsWith(prefix)) return
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
@@ -33,6 +35,7 @@ client.on('message', message => {
     }
     if (command === 'stop') {
         if (stop.has(message.guild.id)) return;
+        if (rainb.has(message.guild.id)) rainb.delete(message.guild.id);
         stop.add(message.guild.id);
         message.reply('Происходит остановка...').catch();
         console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
