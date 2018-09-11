@@ -6,6 +6,7 @@ let prefix = '!';
 let stop = new Set();
 let rainb = new Set();
 let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
+let blocked = ['444154125278511105', '318002925630652418', ''434748832031703040];
 client.on('ready', () => {
     client.user.setActivity(/*prefix + 'rainbow | ' + client.guilds.size + ' servers'*/ 'Технические работы',{ type: 'PLAYING' });
     console.log('Бот: Запущен\n' + 'Серверов: ' + client.guilds.size + '\nАвторизован как: ' + client.user.tag);
@@ -21,7 +22,7 @@ client.on('guildDelete', (guild) => {
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
 })
 client.on('message', message => {
-    if (message.author.id !== creator) return;
+    if (blocked.includes(message.author.id)) return message.reply('Вам отключили все команды бота по причине "Бред в !bug"');
     if (message.author.bot) return
     if (!message.content.startsWith(prefix)) return
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
@@ -30,7 +31,7 @@ client.on('message', message => {
         if (stop.has(message.guild.id)) return message.reply('Радуга отключена');
         forEachTimeout(color, (color) => {
             role.setColor(color).catch(() => {
-            return message.reply('Произошла ошибка во время измены цвета. Причинами могут быть: недостаточно прав (Переместите роль бота над радужной ролью, у меня нет права "Управление ролями" или у вас нет права "Управление ролями"')})}, 1500)
+            return message.reply('Произошла ошибка. Напишите !stop')})}, 1500)
             .then(() => rainbow(role, colors));
     }
     if (command === 'stop') {
@@ -41,6 +42,7 @@ client.on('message', message => {
         console.log(message.author.tag + ' остановил радугу на ' + message.guild.name);
     }
     if (command === 'rainbow') {
+        if (message.author.id !== creator) return;
         let role = message.mentions.roles.first();
         if (rainb.has(message.guild.id)) return;
         if (!role) return message.reply('Вы не упомянули роль').catch();
@@ -66,8 +68,9 @@ client.on('message', message => {
         client.fetchUser('242975403512168449').then (user => user.send('Пользователь ' + message.author.tag + ' (' + message.author + ') ' + '(' + message.author.id + ')' + ' Отправил баг:\n\n**' + bug + '**'));
         message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали бред в !bug, то вам безвозвратно отключат все команды бота!').catch();
     }
-    if (command === 'creator') {
-        message.channel.send('`ANDREY#8389`').catch();
-    }
+    if (command === 'creator') message.channel.send('`ANDREY#8389`').catch();
+    if (command === 'block' && message.author.id === creator) {
+        blocked.push(args[0]);
+        message.reply(args[0] + ' Заблокирован. Все заблокированные:\n' + blocked.join(", "));
 });
 client.login(process.env.BOT_TOKEN);
