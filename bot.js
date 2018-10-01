@@ -15,7 +15,7 @@ client.on('guildCreate', (guild) => {
     client.fetchUser('242975403512168449').then (user => user.send('Я **пришел** на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
     client.user.setActivity(prefix + 'rainbow | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-    if (channels.size > 0) channels.first().send('Напишите ' + prefix + 'rainbow <@роль> чтобы запустить радугу на любой роли которую захотите. Если роль содержит пробелы, то ничего работать не будет. Также, проверьте то что радужная роль находится под ролью бота');
+    if (channels.size > 0) channels.first().send('Напишите ' + prefix + 'rainbow <@роль> чтобы запустить радугу на любой роли которую захотите. Если роль содержит пробелы, то ничего работать не будет. Также, проверьте то что радужная роль находится под ролью бота. Ссылка на наш сервер: https://discord.gg/DxptT7N');
 });
 client.on('guildDelete', (guild) => {
     client.fetchUser('242975403512168449').then (user => user.send('Я **покинул** сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '\nОснователь: ' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
@@ -55,7 +55,8 @@ client.on('message', message => {
         rainb.add(message.guild.id);
     }
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448').catch();
-    if (command === 'mass-say' && message.author.id === '242975403512168449') {
+    if (command === 'mass-say') {
+        if (message.author.id !== creator) return message.reply('Ты не избранный!').catch();
         client.guilds.forEach((guild) => {
             let msg = args.join(" ");
             guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send(msg).catch();
