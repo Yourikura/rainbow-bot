@@ -62,7 +62,7 @@ client.on('message', message => {
             const msg = args.join(" ");
             let channels = [];
             guild.channels.forEach(channel => {if (channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')) channels.push(channel)})
-            channels[0].send(msg).catch(console.log('Эрр'));
+            if (channels[0].type === 'text' && channels[0].permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')) channels[0].send(msg).catch(console.log('Эрр'));
         });
     }
     if (command === 'bug') {
