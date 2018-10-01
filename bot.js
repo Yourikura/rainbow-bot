@@ -55,16 +55,6 @@ client.on('message', message => {
         rainb.add(message.guild.id);
     }
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448').catch();
-    if (command === 'mass-say') {
-        if (message.author.id !== creator) return message.reply('Ты не избранный!').catch();
-        if (!args[0]) return;
-        client.guilds.forEach((guild) => {
-            const msg = args.join(" ");
-            let channels = [];
-            guild.channels.forEach(channel => {if (channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')) channels.push(channel)})
-            if (channels[0].type === 'text' && channels[0].permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')) channels[0].send(msg).catch(console.log('Эрр'));
-        });
-    }
     if (command === 'bug') {
         if (!args[0]) return message.reply('Не указан баг');
         let bug = args.join(" ");
