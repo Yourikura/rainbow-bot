@@ -57,9 +57,12 @@ client.on('message', message => {
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448').catch();
     if (command === 'mass-say') {
         if (message.author.id !== creator) return message.reply('Ты не избранный!').catch();
+        if (!args[0]) return;
         client.guilds.forEach((guild) => {
-            let msg = args.join(" ");
-            guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')).first().send(msg).catch();
+            const msg = args.join(" ");
+            let channels = [];
+            guild.channels.forEach(channel => {if (channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES')) channels.push(channel)})
+            channels[0].send(msg).catch(console.log('Эрр'));
         });
     }
     if (command === 'bug') {
