@@ -5,7 +5,7 @@ const hastebinGen = require('hastebin-gen');
 
 const creator = '242975403512168449';
 
-let prefix = '!';
+let prefix = '=';
 
 let rainbowOn = new Set();
 let rainbowRole = new Set();
@@ -21,40 +21,17 @@ client.on('ready', () => {
 })
 
     client.on('guildCreate', (guild) => {
-        client.fetchUser(creator).then (user => {
-            user.send(`Я был **приглашен** :inbox_tray: на **${guild.name}**. Информация о серере:
-            Основатель: ${guild.owner} **(${guild.owner.user.tag}) (${guild.ownerID})**
-            Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-            Пользователи: **${guild.memberCount}**
-            Каналы: **${guild.channels.size}**
-            Роли: **${guild.roles.size}**
-            Создана **${guild.createdAt.toString().slice(4, -32)}**
-            Иконка ${guild.iconURL}
-            `)
-        });
-        setInterval(() => client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' }, 16000))    
+        client.fetchUser('242975403512168449').then (user => user.send('Я **пришел** :inbox_tray: на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
+        client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
         let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
         if (channels.size > 0) channels.first().send(`Type ${prefix}rainbow \`@role\`, to launch rainbow. Напишите ${prefix}rainbow \`@роль\`, чтобы запустить радугу. Also, join our server --> https://discord.gg/DxptT7N`);
     });
-
     client.on('guildDelete', (guild) => {
         if (rainbowOn.has(guild.id)) rainbowOn.delete(guild.id);
         if (rainbowRole.has(guild.id)) rainbowRole.delete(guild.id);
-        client.fetchUser(creator).then (user => {
-            user.send(`Я был **приглашен** :inbox_tray: на **${guild.name}**. Информация о серере:
-            Основатель: ${guild.owner} **(${guild.owner.user.tag}) (${guild.ownerID})**
-            Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-            Пользователи: **${guild.memberCount}**
-            Каналы: **${guild.channels.size}**
-            Роли: **${guild.roles.size}**
-            Создана **${guild.createdAt.toString().slice(4, -32)}**
-            Иконка ${guild.iconURL}
-            `)
-        });
-        setInterval(() => client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' }, 16000))
+        client.fetchUser('242975403512168449').then (user => user.send('Я **покинул** :outbox_tray: сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '\nОснователь: ' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
+        client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     });
-
-
 client.on('message', message => {
     if (message.channel.type !== 'text' || message.author.bot || !message.content.startsWith(prefix) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
     
@@ -125,11 +102,11 @@ client.on('message', message => {
     }
     
     if (command === 'help') message.channel.send(`
-!rainbow \`@роль\` - Запустить радугу на роли \`@роль\`.
-!stop - Остановить радугу.
-!invite - Ссылка по которой можно пригласить бота на ваш сервер.
-!creator - Узнать создателя бота.
-!bug \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
+${prefix}rainbow \`@роль\` - Запустить радугу на роли \`@роль\`.
+${prefix}stop - Остановить радугу.
+${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
+${prefix}creator - Узнать создателя бота.
+${prefix}bug \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
         `);
 
     if (message.author.id !== creator) return;
@@ -155,7 +132,7 @@ client.on('message', message => {
         let guilds = [];
         client.guilds.forEach(guild => {
             guilds.push(`
-            "Это" : "${guild.name} . Информация о серере:" {
+            "Это ${guild.name}. Информация о серере:" {
                 "Основатель" : "${guild.owner.user.tag} (${guild.ownerID})"
                 "Акроним и ID" : "${guild.nameAcronym} | ${guild.id}"
                 "Пользователи" : "${guild.memberCount}"
