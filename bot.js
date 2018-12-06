@@ -49,6 +49,7 @@ client.on('ready', () => {
 Каналы: **${guild.channels.size}**
 Создана: **${guild.createdAt.toString().slice(-32)}**
 Иконка: ${guild.iconURL}
+**Это наш ${client.guilds.size}-ый сервер!**
         `);
         client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
         let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
