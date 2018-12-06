@@ -22,7 +22,7 @@ let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", 
 /** @namespace process.env.DATABASE */
 
 const db = mysql.createConnection({
-    host: process.env.host, 
+    host: process.env.HOST, 
     user: process.env.USER,
     password: process.env.PASSWORD,
     database: process.env.DATABASE
