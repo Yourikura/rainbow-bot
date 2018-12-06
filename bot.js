@@ -2,8 +2,10 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const forEachTimeout = require('foreach-timeout');
 const hastebinGen = require('hastebin-gen');
+const mysql = require('mysql');
 
 const creator = '242975403512168449';
+const hexreg = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
 let prefix = '=';
 
@@ -14,6 +16,23 @@ let blocked = new Set();
 let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
 
 /** @namespace process.env.BOT_TOKEN */
+/** @namespace process.env.HOST */
+/** @namespace process.env.USER */
+/** @namespace process.env.PASSWORD */
+/** @namespace process.env.DATABASE */
+
+const db = mysql.createConnection({
+    host: process.env.host, 
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
+});
+
+db.connect(err => { if (err) console.log(err) });
+
+function send(id, msg) {
+    client.channels.get(id).send(msg);
+}
 
 client.on('ready', () => {
     client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
@@ -21,24 +40,47 @@ client.on('ready', () => {
 })
 
     client.on('guildCreate', (guild) => {
-        client.fetchUser('242975403512168449').then (user => user.send('Я **пришел** :inbox_tray: на сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '**\nОснователь: **' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
+        send('520181376352256002', `
+Я **пришел** :inbox_tray: на сервер **${guild.name}**. Информация о нем:
+Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
+Основатель: **${guild.owner} (${guild.owner.user.tag})**
+Количество участников: **${guild.memberCount}**
+Роли: **${guild.roles.size}**
+Каналы: **${guild.channels.size}**
+Создана: **${guild.createdAt.toString().slice(-32)}**
+Иконка: **${guild.iconURL}**
+        `);
         client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
         let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-        if (channels.size > 0) channels.first().send(`Type ${prefix}rainbow \`@role\`, to launch rainbow. Напишите ${prefix}rainbow \`@роль\`, чтобы запустить радугу. Also, join our server --> https://discord.gg/DxptT7N`);
+        if (channels.size > 0) channels.first().send(`Type ${prefix}rainbow \`@role\`, to launch changing role. Напишите ${prefix}rainbow \`@роль\`, чтобы запустить меняющуюся роль. Also, join our server --> https://discord.gg/DxptT7N`);
     });
     client.on('guildDelete', (guild) => {
         if (rainbowOn.has(guild.id)) rainbowOn.delete(guild.id);
         if (rainbowRole.has(guild.id)) rainbowRole.delete(guild.id);
-        client.fetchUser('242975403512168449').then (user => user.send('Я **покинул** :outbox_tray: сервер **' + guild.name + '**\nКоличество участников: **' + guild.memberCount + '\nОснователь: ' + guild.owner + ' (' + guild.owner.user.tag + ')' + ' (' + guild.ownerID + ')**\nID: **' + guild.id + '**'));
+        send('520181376352256002', `
+Я **покинул** :outbox_tray: сервер **${guild.name}**. Информация о нем:
+Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
+Основатель: **${guild.owner} (${guild.owner.user.tag})**
+Количество участников: **${guild.memberCount}**
+Роли: **${guild.roles.size}**
+Каналы: **${guild.channels.size}**
+Создана: **${guild.createdAt.toString().slice(-32)}**
+Иконка: **${guild.iconURL}**
+        `);
         client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
     });
+
 client.on('message', message => {
     if (message.channel.type !== 'text' || message.author.bot || !message.content.startsWith(prefix) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
-    
+    message.author.client
     if (blocked.has(message.author.id)) return message.reply('Автор бота отключил вам все команды. Причинами могут быть:\n1. Отправление несуществующего бага\n2. Нарушение правил на официальном севрере');
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
+
+    db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+        if (err) console.log(err);
+        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '#ff0000 #ffa500 #ffff00 #00ff00 #00BFFF #0000ff #ff00ff')`, console.log)
 
     async function rainbow (role, colors) {
 
@@ -57,17 +99,15 @@ client.on('message', message => {
     if (command === 'stop') {
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
 
-        if (!rainbowOn.has(message.guild.id)) return message.reply('Радуга и так не включена')
+        if (!rainbowOn.has(message.guild.id)) return message.reply('Изменение цвета роли и так не включено')
 
         rainbowOn.delete(message.guild.id)
-        message.reply('Радуга отключена. Если радуга всё же не отключилась, то подождите некоторое время');
+        message.reply('Изменение отключено');
 
-        client.fetchUser(creator).then (user => {
-            user.send(`Пользователь ${message.author.tag} (${message.author.id}) **отключил** радугу на ${message.guild.name} (${message.guild.id})`)
-        })
+        send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **отключил** :negative_squared_cross_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
     }
 
-    if (command === 'rainbow') {
+    if (command === 'role-changing') {
         let role = message.mentions.roles.first();
 
         if (!role) return message.reply('Вы не упомянули роль. Правильное использование:\n!rainbow @Радужная роль');
@@ -81,14 +121,25 @@ client.on('message', message => {
         rainbowOn.add(message.guild.id);
         rainbowRole.add(role.id)
 
-        rainbow(role, colors);
+        rainbow(role, rows[0].colors.split(' '));
 
-        client.fetchUser(creator).then (user => {
-            user.send(`Пользователь ${message.author.tag} (${message.author.id}) **включил** радугу на ${message.guild.name} (${message.guild.id})`)
-        })
+        send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
-        message.channel.send('Радуга успешно включена');
+        message.reply('Радуга успешно включена');
     }
+
+    if (command === 'set-colors') {
+        let colors = [];
+        if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
+        for (let i = 0; i < args.length; i++) {
+            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом`)
+            colors.push(`${i + 1}) **${args[i]}**`)
+        }
+        db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
+        message.reply(`Цвета меняющейся роли изменены на:\n${colors.join('\n')}`);
+    }
+
+});
 
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
     
@@ -97,17 +148,18 @@ client.on('message', message => {
     if (command === 'bug') {
         if (!args[0]) return message.reply('Не указан баг');
         let bug = args.join(" ");
-        client.fetchUser(creator).then(user => user.send(`Баг от ${message.author.tag}:\n**${bug}**`));
+        client.fetchUser(creator).then(user => user.send(`Баг от ${message.author.tag} **${message.author.id}:\n**${bug}**`));
         message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали несуществующий баг, то вам безвозвратно отключат все команды бота!').catch();
     }
     
     if (command === 'help') message.channel.send(`
-${prefix}rainbow \`@роль\` - Запустить радугу на роли \`@роль\`.
-${prefix}stop - Остановить радугу.
+${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
+${prefix}stop - Остановить изменение цвета.
 ${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
 ${prefix}creator - Узнать создателя бота.
 ${prefix}bug \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
-        `);
+Получить больше помощи можно тут: https://discord.gg/NvcAKdt
+`);
 
     if (message.author.id !== creator) return;
 
@@ -182,9 +234,11 @@ ${prefix}bug \`описание бага\` - Если бот работает н
         guild.members.forEach(member => {
             desc.push(`Тэг: "${member.user.tag}". ID: "${member.id}". Высшая роль: "@${member.highestRole.name}". Присоединился: "${member.joinedAt.toString().slice(4, -33)}"\n`);
         })
-
+        client.users.get().
         hastebinGen(desc.join(''), 'js').then(link => message.channel.send(`Информация о сервере ${client.guilds.get(args[0]).name} --> ${link}`))
     }
+
+    
 
 });
 
