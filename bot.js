@@ -48,11 +48,11 @@ client.on('ready', () => {
 Роли: **${guild.roles.size}**
 Каналы: **${guild.channels.size}**
 Создана: **${guild.createdAt.toString().slice(-32)}**
-Иконка: **${guild.iconURL}**
+Иконка: ${guild.iconURL}
         `);
-        client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
+        client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
         let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-        if (channels.size > 0) channels.first().send(`Type ${prefix}rainbow \`@role\`, to launch changing role. Напишите ${prefix}rainbow \`@роль\`, чтобы запустить меняющуюся роль. Also, join our server --> https://discord.gg/DxptT7N`);
+        if (channels.size > 0) channels.first().send(`Type ${prefix}role-changing \`@role\`, to launch changing role. Напишите ${prefix}role-changing \`@роль\`, чтобы запустить меняющуюся роль. Also, join our server --> https://discord.gg/DxptT7N`);
     });
     client.on('guildDelete', (guild) => {
         if (rainbowOn.has(guild.id)) rainbowOn.delete(guild.id);
@@ -60,19 +60,18 @@ client.on('ready', () => {
         send('520181376352256002', `
 Я **покинул** :outbox_tray: сервер **${guild.name}**. Информация о нем:
 Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-Основатель: **${guild.owner} (${guild.owner.user.tag})**
+Основатель: **${guild.owner} (\`${guild.owner.user.tag}\`)**
 Количество участников: **${guild.memberCount}**
 Роли: **${guild.roles.size}**
 Каналы: **${guild.channels.size}**
 Создана: **${guild.createdAt.toString().slice(-32)}**
-Иконка: **${guild.iconURL}**
+Иконка: ${guild.iconURL}
         `);
-        client.user.setActivity(prefix + 'help | ' + client.guilds.size + ' servers',{ type: 'PLAYING' })
+        client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
     });
 
 client.on('message', message => {
     if (message.channel.type !== 'text' || message.author.bot || !message.content.startsWith(prefix) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
-    message.author.client
     if (blocked.has(message.author.id)) return message.reply('Автор бота отключил вам все команды. Причинами могут быть:\n1. Отправление несуществующего бага\n2. Нарушение правил на официальном севрере');
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
@@ -110,13 +109,13 @@ client.on('message', message => {
     if (command === 'role-changing') {
         let role = message.mentions.roles.first();
 
-        if (!role) return message.reply('Вы не упомянули роль. Правильное использование:\n!rainbow @Радужная роль');
+        if (!role) return message.reply(`Вы не упомянули роль. Правильное использование:\n${prefix}rainbow @Радужная роль`);
 
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
 
         if (!role.editable) return message.reply('У меня недостаточно прав. Роль бота должна находиться над радужной ролью и мне нужно право "Управление ролями"');
 
-        if (rainbowOn.has(message.guild.id)) return message.reply('Нелья создавать более одной радуги на сервере');
+        if (rainbowOn.has(message.guild.id)) return message.reply('Нелья создавать более одной меняющейся роли на сервере');
 
         rainbowOn.add(message.guild.id);
         rainbowRole.add(role.id)
@@ -129,6 +128,7 @@ client.on('message', message => {
     }
 
     if (command === 'set-colors') {
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
         let colors = [];
         if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
         for (let i = 0; i < args.length; i++) {
@@ -137,7 +137,6 @@ client.on('message', message => {
         }
         db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
         message.reply(`Цвета меняющейся роли изменены на:\n${colors.join('\n')}`);
-        console.log(args.join(' '));
     }
 
 });
@@ -149,12 +148,13 @@ client.on('message', message => {
     if (command === 'bug') {
         if (!args[0]) return message.reply('Не указан баг');
         let bug = args.join(" ");
-        client.fetchUser(creator).then(user => user.send(`Баг от ${message.author.tag} **${message.author.id}:\n**${bug}**`));
-        message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали несуществующий баг, то вам безвозвратно отключат все команды бота!').catch();
+        send('520325705905471508', `Баг от \`${message.author.tag}\` (${message.author.id}):\n**${bug}**`);
+        message.channel.send('Баг успешно отправлен :white_check_mark:\n\nВнимание! Если вы написали несуществующий баг, то вам безвозвратно отключат все команды бота!');
     }
     
     if (command === 'help') message.channel.send(`
-${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
+${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.\
+${prefix}set-colors \`от 2 до 7 hex цветов\`
 ${prefix}stop - Остановить изменение цвета.
 ${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
 ${prefix}creator - Узнать создателя бота.
