@@ -137,6 +137,7 @@ client.on('message', message => {
         }
         db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
         message.reply(`Цвета меняющейся роли изменены на:\n${colors.join('\n')}`);
+        console.log(args.join(' '));
     }
 
 });
