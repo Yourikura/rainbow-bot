@@ -149,13 +149,6 @@ client.on('message', message => {
         message.reply('Цвета меняющейся роли изменены на стандартные');
     }
 
-    if (command === 'colors') {
-        let allColors = [];
-        const guildColors = rows[0].colors.split(' ');
-        for (let i = 0; i < guildColors.length; i++) allColors.push(`${i + 1}) **${guildColors[i]}**`);
-        message.reply(`Текущие цвета меняющейся роли:\n${allColors.join('\n')}`);
-    }
-
 });
 
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
