@@ -143,7 +143,7 @@ client.on('message', message => {
     if (command === 'colors') {
         let allColors = [];
         const guildColors = rows[0].colors.split(' ');
-        for (let i = 0; i < guildColors.length; i++) allColors.push(`${i + 1}) **${args[i]}**`);
+        for (let i = 0; i < guildColors.length; i++) allColors.push(`${i + 1}) **${guildColors[i]}**`);
         message.reply(`Текущие цвета меняющейся роли:\n${allColors.join('\n')}`);
     }
 
@@ -161,14 +161,14 @@ client.on('message', message => {
     }
     
     if (command === 'help') message.channel.send(`
-${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
-${prefix}set-colors \`от 2 до 7 hex цветов\`
-${prefix}colors - Узнать текущие цвета меняющейся роли
-${prefix}stop - Остановить изменение цвета.
-${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
-${prefix}creator - Узнать создателя бота.
-${prefix}bug \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
-Получить больше помощи можно тут: https://discord.gg/NvcAKdt
+**${prefix}role-changing** \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
+**${prefix}set-colors** \`от 2 до 7 hex цветов\`
+**${prefix}colors** - Узнать текущие цвета меняющейся роли
+**${prefix}stop** - Остановить изменение цвета.
+**${prefix}invite** - Ссылка по которой можно пригласить бота на ваш сервер.
+**${prefix}creator** - Узнать создателя бота.
+**${prefix}bug** \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
+\n**Получить больше помощи можно тут:** \`https://discord.gg/NvcAKdt\`
 `);
 
     if (message.author.id !== creator) return;
