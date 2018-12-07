@@ -141,7 +141,7 @@ client.on('message', message => {
     }
 
     if (command === 'colors') {
-        let allColors
+        let allColors = [];
         const guildColors = rows[0].colors.split(' ');
         for (let i = 0; i < guildColors.length; i++) allColors.push(`${i + 1}) **${args[i]}**`);
         message.reply(`Текущие цвета меняющейся роли:\n${allColors.join('\n')}`);
