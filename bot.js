@@ -132,20 +132,15 @@ client.on('message', message => {
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
         let allColors = [];
         if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
-        if (args[0] !== 'default') {
             
-            for (let i = 0; i < args.length; i++) {
-                if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является ни hex цветом (\`#ff0000\`), ни \`default\``)
-                allColors.push(`${i + 1}) **${args[i]}**`)
-            } 
+        for (let i = 0; i < args.length; i++) {
+            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является ни hex цветом (\`#ff0000\`), ни \`default\``)
+            allColors.push(`${i + 1}) **${args[i]}**`)
+        } 
 
-            db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
-            message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
+        db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
+        message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
 
-        } else {
-            db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
-            message.reply('Цвета меняющейся роли изменены на стандартные');
-        }
     }
 
     if (command === 'reset-colors') {
@@ -176,7 +171,7 @@ client.on('message', message => {
     
     if (command === 'help') message.channel.send(`
 **${prefix}role-changing** \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
-**${prefix}set-colors** \`HEX цвета\` или \`default\` - Изменить палитру цветов для меняющейся роли
+**${prefix}set-colors** \`HEX цвета\` - Изменить палитру цветов для меняющейся роли
 **${prefix}reset-colors** - Изменить цветовую палитру меняющейся роли на стандартную (радужную)
 **${prefix}colors** - Узнать текущие цвета меняющейся роли
 **${prefix}stop** - Остановить изменение цвета.
