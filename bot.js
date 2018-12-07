@@ -43,7 +43,7 @@ client.on('ready', () => {
         send('520181376352256002', `
 Я **пришел** :inbox_tray: на сервер **${guild.name}**. Информация о нем:
 Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-Основатель: **${guild.owner} (${guild.owner.user.tag})**
+Основатель: **${guild.owner} (\`${guild.owner.user.tag}\`)**
 Количество участников: **${guild.memberCount}**
 Роли: **${guild.roles.size}**
 Каналы: **${guild.channels.size}**
