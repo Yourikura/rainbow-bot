@@ -47,7 +47,7 @@ client.on('ready', () => {
 Количество участников: **${guild.memberCount}**
 Роли: **${guild.roles.size}**
 Каналы: **${guild.channels.size}**
-Создана: **${guild.createdAt.toString().slice(-32)}**
+Создана: **${guild.createdAt.toString().slice(4, -32)}**
 Иконка: ${guild.iconURL}
 **Это наш ${client.guilds.size}-ый сервер!**
         `);
@@ -65,7 +65,7 @@ client.on('ready', () => {
 Количество участников: **${guild.memberCount}**
 Роли: **${guild.roles.size}**
 Каналы: **${guild.channels.size}**
-Создана: **${guild.createdAt.toString().slice(-32)}**
+Создана: **${guild.createdAt.toString().slice(4, -32)}**
 Иконка: ${guild.iconURL}
         `);
         client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
