@@ -13,7 +13,7 @@ let rainbowOn = new Set();
 let rainbowRole = new Set();
 let blocked = new Set();
 
-let colors = ["#ff0000", "#ffa500", "#ffff00", "#00ff00", "#00BFFF", "#0000ff", "#ff00ff"];
+let colors = '#ff0000 #ffa500 #ffff00 #00ff00 #00BFFF #0000ff #ff00ff';
 
 /** @namespace process.env.BOT_TOKEN */
 /** @namespace process.env.HOST */
@@ -80,7 +80,7 @@ client.on('message', message => {
 
     db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
         if (err) console.log(err);
-        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '#ff0000 #ffa500 #ffff00 #00ff00 #00BFFF #0000ff #ff00ff')`, console.log)
+        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
 
     async function rainbow (role, colors) {
 
