@@ -125,7 +125,7 @@ client.on('message', message => {
 
         send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
-        message.reply('Авто-изменнение успешно включено');
+        message.reply('Авто-изменение успешно включено');
     }
 
     if (command === 'set-colors') {
@@ -134,7 +134,7 @@ client.on('message', message => {
         if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
             
         for (let i = 0; i < args.length; i++) {
-            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является ни hex цветом (\`#ff0000\`), ни \`default\``)
+            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
             allColors.push(`${i + 1}) **${args[i]}**`)
         } 
 
