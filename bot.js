@@ -154,7 +154,7 @@ client.on('message', message => {
     }
     
     if (command === 'help') message.channel.send(`
-${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.\
+${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
 ${prefix}set-colors \`от 2 до 7 hex цветов\`
 ${prefix}stop - Остановить изменение цвета.
 ${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
