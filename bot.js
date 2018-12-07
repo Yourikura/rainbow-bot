@@ -107,14 +107,14 @@ client.on('message', message => {
         send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **отключил** :negative_squared_cross_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
     }
 
-    if (command === 'role-changing') {
+    if (['role-changing', 'changing-role', 'rc', 'r-c', 'cr', 'c-r'].includes(command)) {
         let role = message.mentions.roles.first();
-
-        if (!role) return message.reply(`Вы не упомянули роль. Правильное использование:\n${prefix}rainbow @Радужная роль`);
 
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
 
-        if (!role.editable) return message.reply('У меня недостаточно прав. Роль бота должна находиться над радужной ролью и мне нужно право "Управление ролями"');
+        if (!role) return message.reply(`Вы не упомянули роль. Правильное использование:\n${prefix}role-changing @роль`);
+
+        if (!role.editable) return message.reply('У меня недостаточно прав. Роль бота должна находиться над ролью и мне нужно право "Управление ролями"');
 
         if (rainbowOn.has(message.guild.id)) return message.reply('Нелья создавать более одной меняющейся роли на сервере');
 
@@ -125,7 +125,7 @@ client.on('message', message => {
 
         send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
-        message.reply('Радуга успешно включена');
+        message.reply('Авто-изменнение успешно включено');
     }
 
     if (command === 'set-colors') {
@@ -138,6 +138,13 @@ client.on('message', message => {
         }
         db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
         message.reply(`Цвета меняющейся роли изменены на:\n${colors.join('\n')}`);
+    }
+
+    if (command === 'colors') {
+        let allColors
+        const guildColors = rows[0].colors.split(' ');
+        for (let i = 0; i < guildColors.length; i++) allColors.push(`${i + 1}) **${args[i]}**`);
+        message.reply(`Текущие цвета меняющейся роли:\n${allColors.join('\n')}`);
     }
 
 });
@@ -156,6 +163,7 @@ client.on('message', message => {
     if (command === 'help') message.channel.send(`
 ${prefix}role-changing \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
 ${prefix}set-colors \`от 2 до 7 hex цветов\`
+${prefix}colors - Узнать текущие цвета меняющейся роли
 ${prefix}stop - Остановить изменение цвета.
 ${prefix}invite - Ссылка по которой можно пригласить бота на ваш сервер.
 ${prefix}creator - Узнать создателя бота.
