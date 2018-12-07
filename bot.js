@@ -130,14 +130,28 @@ client.on('message', message => {
 
     if (command === 'set-colors') {
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-        let colors = [];
+        let allColors = [];
         if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
-        for (let i = 0; i < args.length; i++) {
-            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом`)
-            colors.push(`${i + 1}) **${args[i]}**`)
+        if (args[0] !== 'default') {
+            
+            for (let i = 0; i < args.length; i++) {
+                if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является ни hex цветом (\`#ff0000\`), ни \`default\``)
+                allColors.push(`${i + 1}) **${args[i]}**`)
+            } 
+
+            db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
+            message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
+
+        } else {
+            db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
+            message.reply('Цвета меняющейся роли изменены на стандартные');
         }
-        db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
-        message.reply(`Цвета меняющейся роли изменены на:\n${colors.join('\n')}`);
+    }
+
+    if (command === 'reset-colors') {
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+        db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
+        message.reply('Цвета меняющейся роли изменены на стандартные');
     }
 
     if (command === 'colors') {
@@ -162,7 +176,8 @@ client.on('message', message => {
     
     if (command === 'help') message.channel.send(`
 **${prefix}role-changing** \`@роль\` - Запустить изменение цвета на роли \`@роль\`.
-**${prefix}set-colors** \`от 2 до 7 hex цветов\`
+**${prefix}set-colors** \`HEX цвета\` или \`default\` - Изменить палитру цветов для меняющейся роли
+**${prefix}reset-colors** - Изменить цветовую палитру меняющейся роли на стандартную (радужную)
 **${prefix}colors** - Узнать текущие цвета меняющейся роли
 **${prefix}stop** - Остановить изменение цвета.
 **${prefix}invite** - Ссылка по которой можно пригласить бота на ваш сервер.
