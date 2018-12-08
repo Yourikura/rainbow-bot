@@ -78,10 +78,6 @@ client.on('message', message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
-    db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
-        if (err) console.log(err);
-        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
-
     async function rainbow (role, colors) {
 
         if (!role.editable || !role || !rainbowOn.has(message.guild.id)) return rainbowRole.delete(role.id);
@@ -107,49 +103,52 @@ client.on('message', message => {
         send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **отключил** :negative_squared_cross_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
     }
 
-    if (['role-changing', 'changing-role', 'rc', 'r-c', 'cr', 'c-r'].includes(command)) {
-        let role = message.mentions.roles.first();
+    db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+        if (err) console.log(err);
+        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
+    
+        if (['role-changing', 'changing-role', 'rc', 'r-c', 'cr', 'c-r'].includes(command)) {
+            let role = message.mentions.roles.first();
 
-        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+            if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
 
-        if (!role) return message.reply(`Вы не упомянули роль. Правильное использование:\n${prefix}role-changing @роль`);
+            if (!role) return message.reply(`Вы не упомянули роль. Правильное использование:\n${prefix}role-changing @роль`);
 
-        if (!role.editable) return message.reply('У меня недостаточно прав. Роль бота должна находиться над ролью и мне нужно право "Управление ролями"');
+            if (!role.editable) return message.reply('У меня недостаточно прав. Роль бота должна находиться над ролью и мне нужно право "Управление ролями"');
 
-        if (rainbowOn.has(message.guild.id)) return message.reply('Нелья создавать более одной меняющейся роли на сервере');
+            if (rainbowOn.has(message.guild.id)) return message.reply('Нелья создавать более одной меняющейся роли на сервере');
 
-        rainbowOn.add(message.guild.id);
-        rainbowRole.add(role.id)
+            rainbowOn.add(message.guild.id);
+            rainbowRole.add(role.id)
 
-        rainbow(role, rows[0].colors.split(' '));
+            rainbow(role, rows[0].colors.split(' '));
 
-        send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
+            send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
-        message.reply('Авто-изменение успешно включено');
-    }
+            message.reply('Авто-изменение успешно включено');
+        }
 
-    if (command === 'set-colors') {
-        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-        let allColors = [];
-        if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
+        if (command === 'set-colors') {
+            if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+            let allColors = [];
+            if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
             
-        for (let i = 0; i < args.length; i++) {
-            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
-            allColors.push(`${i + 1}) **${args[i]}**`)
-        } 
+            for (let i = 0; i < args.length; i++) {
+                if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
+                allColors.push(`${i + 1}) **${args[i]}**`)
+            } 
 
-        db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
-        message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
+            db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
+            message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
 
-    }
+        }
 
-    if (command === 'reset-colors') {
-        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-        db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
-        message.reply('Цвета меняющейся роли изменены на стандартные');
-    }
-
-});
+        if (command === 'reset-colors') {
+            if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+            db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
+            message.reply('Цвета меняющейся роли изменены на стандартные');
+        }
+    });
 
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
     
