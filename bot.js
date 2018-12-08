@@ -117,7 +117,7 @@ client.on('message', message => {
             rainbowOn.add(message.guild.id);
             rainbowRole.add(role.id)
 
-            db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+            db.query(`SELECT * FROM guildData WHERE id = '${message.guild.id}'`, (err, rows) => {
                 if (err) console.log(err);
                 if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
                 console.log(rows);
@@ -139,7 +139,7 @@ client.on('message', message => {
             if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
             allColors.push(`${i + 1}) **${args[i]}**`)
         } 
-        db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+        db.query(`SELECT * FROM guildData WHERE id = '${message.guild.id}'`, (err, rows) => {
             if (err) console.log(err);
             if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
             db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
@@ -150,7 +150,7 @@ client.on('message', message => {
 
     if (command === 'reset-colors') {
         if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-        db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+        db.query(`SELECT * FROM guildData WHERE id = '${message.guild.id}'`, (err, rows) => {
             if (err) console.log(err);
             if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
             db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
