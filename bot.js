@@ -102,10 +102,6 @@ client.on('message', message => {
 
         send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **отключил** :negative_squared_cross_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
     }
-
-    db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
-        if (err) console.log(err);
-        if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
     
         if (['role-changing', 'changing-role', 'rc', 'r-c', 'cr', 'c-r'].includes(command)) {
             let role = message.mentions.roles.first();
@@ -121,34 +117,44 @@ client.on('message', message => {
             rainbowOn.add(message.guild.id);
             rainbowRole.add(role.id)
 
-            rainbow(role, rows[0].colors.split(' '));
+            db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+                if (err) console.log(err);
+                if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
+                rainbow(role, rows[0].colors.split(' '));
+            })
 
             send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
             message.reply('Авто-изменение успешно включено');
         }
 
-        if (command === 'set-colors') {
-            if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
-            let allColors = [];
-            if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
+    if (command === 'set-colors') {
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+        let allColors = [];
+        if (!args[1] || args[7]) return message.reply('Укажите от 2-ух до 7-ми цветов');
             
-            for (let i = 0; i < args.length; i++) {
-                if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
-                allColors.push(`${i + 1}) **${args[i]}**`)
-            } 
-
+        for (let i = 0; i < args.length; i++) {
+            if (!args[i].match(hexreg)) return message.reply(`Аргумент **${i + 1}** не является hex цветом (\`#ff0000\`)`)
+            allColors.push(`${i + 1}) **${args[i]}**`)
+        } 
+        db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+            if (err) console.log(err);
+            if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
             db.query(`UPDATE guildData SET colors = '${args.join(' ')}' WHERE id = '${message.guild.id}'`);
-            message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
+        })
+        message.reply(`Цвета меняющейся роли изменены на:\n${allColors.join('\n')}`);
 
-        }
+    }
 
-        if (command === 'reset-colors') {
-            if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+    if (command === 'reset-colors') {
+        if (!message.member.hasPermission("MANAGE_ROLES")) return message.reply('У вас недостаточно прав');
+        db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
+            if (err) console.log(err);
+            if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
             db.query(`UPDATE guildData SET colors = '${colors}' WHERE id = '${message.guild.id}'`);
-            message.reply('Цвета меняющейся роли изменены на стандартные');
-        }
-    });
+        })
+        message.reply('Цвета меняющейся роли изменены на стандартные');
+    }
 
     if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
     
