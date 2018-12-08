@@ -120,7 +120,8 @@ client.on('message', message => {
             db.query(`SELECT * FROM guildData WHERE id = ${message.guild.id}`, (err, rows) => {
                 if (err) console.log(err);
                 if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
-                console.log(`rows: ${rows}\nrows[0]: ${rows[0]}`);
+                console.log(rows);
+                console.log(rows[0]);
                 rainbow(role, rows[0].colors.split(' '));
             })
 
