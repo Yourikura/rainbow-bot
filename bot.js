@@ -122,7 +122,8 @@ client.on('message', message => {
                 if (!rows[0]) db.query(`INSERT INTO guildData (id, colors) VALUES ('${message.guild.id}', '${colors}')`, console.log)
                 console.log(rows);
                 console.log(rows[0]);
-                rainbow(role, rows[0].colors.split(' '));
+                if (!rows[0]) rainbow(role, colors.split(' '));
+                else rainbow(role, rows[0].colors.split(' '));
             })
 
             send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
