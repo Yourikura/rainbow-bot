@@ -23,7 +23,6 @@ function send(id, msg) {
 }
 
 async function roleChanginging () {
-    console.log('Запущен');
     forEachTimeout(colors, color => {
         client.guilds.forEach(guild => {
             if (rainbowOn.has(guild.id) && guild.roles.find("name", 'Multicolor')) {
