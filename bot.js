@@ -25,7 +25,7 @@ function send(id, msg) {
 async function roleChanginging () {
     forEachTimeout(colors, color => {
         client.guilds.forEach(guild => {
-            if (rainbowOn.has(guild.id) && guild.roles.find("name", 'Multicolor')) {
+            if (rainbowOn.has(guild.id) && guild.roles.find(r => r.name === 'Multicolor')) {
                 const role = guild.roles.find(r => r.name === 'Multicolor')
                 if (role.editable && role) role.setColor(color); 
             };
