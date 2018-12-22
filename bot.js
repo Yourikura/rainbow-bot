@@ -27,7 +27,7 @@ async function roleChanginging () {
     forEachTimeout(colors, color => {
         client.guilds.forEach(guild => {
             if (rainbowOn.has(guild.id) && guild.roles.find("name", 'Multicolor')) {
-                const role = guild.roles.find("name", 'Multicolor')
+                const role = guild.roles.find(r => r.name === 'Multicolor')
                 if (role.editable && role) role.setColor(color); 
             };
         });
@@ -85,6 +85,7 @@ client.on('ready', () => {
 client.on('message', message => {
     if (message.channel.type !== 'text' || message.author.bot || !message.content.startsWith(prefix) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
     if (blocked.has(message.author.id)) return message.reply('Автор бота отключил вам все команды. Причинами могут быть:\n1. Отправление несуществующего бага\n2. Нарушение правил на официальном севрере');
+    if (message.author.id !== creator) return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
 
@@ -174,7 +175,7 @@ client.on('message', message => {
     }
     
     if (command === 'help') message.channel.send(`
-**${prefix}rainbow** \`\` - Запустить изменение цвета на роли Multicolor.
+**${prefix}rainbow** - Запустить изменение цвета на роли Multicolor.
 **${prefix}stop** - Остановить изменение цвета.
 **${prefix}invite** - Ссылка по которой можно пригласить бота на ваш сервер.
 **${prefix}creator** - Узнать создателя бота.
