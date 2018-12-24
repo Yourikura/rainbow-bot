@@ -22,7 +22,7 @@ function send(id, msg) {
     client.channels.get(id).send(msg);
 }
 
-async function roleChanginging () {
+function roleChanginging () {
     forEachTimeout(colors, color => {
         client.guilds.forEach(guild => {
             if (rainbowOn.has(guild.id) && guild.roles.find(r => r.name === 'Multicolor')) {
