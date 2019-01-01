@@ -22,7 +22,7 @@ function send(id, msg) {
     client.channels.get(id).send(msg);
 }
 
-function roleChanginging () {
+async function roleChanginging () {
     forEachTimeout(colors, color => {
         client.guilds.forEach(guild => {
             if (rainbowOn.has(guild.id) && guild.roles.find(r => r.name === 'Multicolor')) {
@@ -36,7 +36,7 @@ function roleChanginging () {
 roleChanginging();
 
 client.on('ready', () => {
-    client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
+    client.user.setActivity(`${prefix}help`,{ type: 'PLAYING' });
     console.log(`Запущен. Сервера: ${client.guilds.size}`);
 })
 
@@ -56,9 +56,10 @@ client.on('ready', () => {
         .setFooter(`Это наш ${client.guilds.size}-ый сервер!`)
         .setTimestamp()
         send('520181376352256002', {embed});
-        client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
+        client.user.setActivity(`${prefix}help`,{ type: 'PLAYING' });
         let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-    if (channels.size > 0) channels.first().send(`Create role with name \`Multicolor\` and check what bot have enough permissions for editing this role and type \`${prefix}rainbow\`. Создайте роль с названием \`Multicolor\`, проверьте что у бота есть все права чтобы изменять эту роль. И напишите \`${prefix}rainbow\`. Получить помощь (Get some help) --> https://discord.gg/DxptT7N`);
+    if (channels.size > 0) channels.first().send('Данный бот приватный');
+    guild.leave().catch();
     });
     client.on('guildDelete', (guild) => {
         if (rainbowOn.has(guild.id)) rainbowOn.delete(guild.id);
@@ -78,14 +79,63 @@ client.on('ready', () => {
         .setFooter(`Ну тупые...`)
         .setTimestamp()
         send('520181376352256002', {embed});
-        client.user.setActivity(`${prefix}help | ${client.guilds.size} servers`,{ type: 'PLAYING' });
+        client.user.setActivity(`${prefix}help`,{ type: 'PLAYING' });
     });
 
 client.on('message', message => {
-    if (message.channel.type !== 'text' || message.author.bot || !message.content.startsWith(prefix) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
+    if (message.channel.type !== 'text' || message.author.bot || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
     if (blocked.has(message.author.id)) return message.reply('Автор бота отключил вам все команды. Причинами могут быть:\n1. Отправление несуществующего бага\n2. Нарушение правил на официальном севрере');
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
+
+    function random(min, max) {
+        return Math.floor(Math.random() * (max + 1 - min)) + min;
+    }
+
+    if (!message.content.startsWith(prefix)) return;
+
+    const embed = new Discord.RichEmbed()
+    .setAuthor(message.author.tag, message.author.avatarURL)
+    .setColor('55ff55')
+    .setDescription(`Пользователь ${message.author} использовал команду **${prefix+command}** \`${(args[0]? `\`${args.join(' ')}\`` : '')}\` на **${message.guild.name}**`)
+    send('520181421382565903', embed);
+
+    if (['memes'].includes(command)) {
+        const memes = [
+            'https://cdn.discordapp.com/attachments/529016532232044556/529368940145672212/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529366880511590411/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529034507408375851/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529032528699588614/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529027412814594068/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529026550482337817/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529025913875202079/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529024737020477450/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529023030010183711/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529021261398147093/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529020657128833025/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529017600064094218/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529016830472224779/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529016764365799426/6576a6e2eda9eaa6.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529016714235609091/-1.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529016653334315010/unknown.png',
+            'https://cdn.discordapp.com/attachments/529016532232044556/529678920665137152/12.jpg'
+        ]
+
+        const embed = new Discord.RichEmbed()
+        .setTitle('Очень смищно')
+        .setColor('55ff55')
+        .setImage(memes[random(0, memes.length - 1)]);
+        message.channel.send({embed})
+    }
+
+    /*if (command === 'clear') {
+        let leaved = 0;
+        client.guilds.forEach(guild => {
+            if (guild.memberCount < 400) guild.leave().catch(err);
+            leaved++;
+        })
+        message.reply(`Я ливнул с ${leaved} серверов`)
+    }*/
 
     function succ (text) {
         const embed = new Discord.RichEmbed()
@@ -111,24 +161,20 @@ client.on('message', message => {
 
         rainbowOn.delete(message.guild.id)
         succ('Изменение роли успешно отключено')
-
-        send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **отключил** :negative_squared_cross_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
     }
     
         if (['rainbow', 'rb'].includes(command)) {
-            const role = message.guild.roles.find("name", 'Multicolor')
+            const role = message.guild.roles.find(r => r.name === 'Multicolor');
 
-            if (!message.member.hasPermission("MANAGE_ROLES")) return err(null, 'Управление ролями')
+            if (!message.member.hasPermission("MANAGE_ROLES")) return err(null, 'Управление ролями');
 
             if (!role) return err('На вашем сервере нет роли с названием \`Multicolor\`');
 
-            if (!role.editable) return err(`У меня недостаточно прав для изменения роли ${role}`)
+            if (!role.editable) return err(`У меня недостаточно прав для изменения роли ${role}`);
 
             if (rainbowOn.has(message.guild.id)) return err('Нелья создавать более одной меняющейся роли на сервере');
 
             rainbowOn.add(message.guild.id);
-
-            send('520181421382565903', `Пользователь ${message.author} (${message.author.tag}) **включил** :white_check_mark: изменение роли на ${message.guild.name} (${message.guild.id})`)
 
             succ('Авто-изменение успешно включено');
         }
@@ -175,7 +221,6 @@ client.on('message', message => {
     if (command === 'help') message.channel.send(`
 **${prefix}rainbow** - Запустить изменение цвета на роли Multicolor.
 **${prefix}stop** - Остановить изменение цвета.
-**${prefix}invite** - Ссылка по которой можно пригласить бота на ваш сервер.
 **${prefix}creator** - Узнать создателя бота.
 **${prefix}bug** \`описание бага\` - Если бот работает не так как должен, то вы можете рассказать об этом разработчику с помощью этой команды.
 \n**Получить больше помощи можно тут:** \`https://discord.gg/NvcAKdt\`
@@ -201,8 +246,9 @@ client.on('message', message => {
     }
 
     if (command === 'guilds') {
+        const guildsCollection = client.guilds.sort((guild1, guild2) => { return guild2.memberCount-guild1.memberCount });
         let guilds = [];
-        client.guilds.forEach(guild => {
+        guildsCollection.forEach(guild => {
             guilds.push(`
             "Это ${guild.name}. Информация о серере:" {
                 "Основатель" : "${guild.owner.user.tag} (${guild.ownerID})"
@@ -256,6 +302,24 @@ client.on('message', message => {
         })
         client.users.get().
         hastebinGen(desc.join(''), 'js').then(link => message.channel.send(`Информация о сервере ${client.guilds.get(args[0]).name} --> ${link}`))
+    }
+
+    if (command === 'js') {
+
+        const code = args.join(" "); //Константа с ботом
+
+        try {
+
+            let output = eval(code); //Константа с эмуляцией кода
+            
+            if (output.length < 1950) message.channel.send(`\`\`\`js\n${output}\n\`\`\``).then(() => {message.react("✅")}); //Отправка результатов симуляции
+            
+            else message.channel.send(`${output}`, {split:"\n", code:"js"}); //Отправка результатов симуляции если их длина больше 1950-ти
+        
+        } 
+        
+        catch (error) { message.channel.send(`Анхэндлэд промайз риджекшн ворнинг \`\`\`js\n${error}\`\`\``).then(() => message.react("❎")) }; //Отправка ошибки
+        
     }
 
     
