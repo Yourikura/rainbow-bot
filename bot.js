@@ -206,8 +206,6 @@ client.on('message', message => {
         })
         message.reply('Цвета меняющейся роли изменены на стандартные');
     }*/
-
-    if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
     
     if (command === 'creator') message.channel.send(`\`${client.users.get(creator).tag}\``);
 
@@ -219,6 +217,7 @@ client.on('message', message => {
     }
     
     if (command === 'help') message.channel.send(`
+**ВНИМЕНИЕ! Этот бот является платным. Если вы хотите добавить его на сервер, то вам нужно сначала посмотреть информацию о донате на сервере https://discord.gg/NvcAKdt**
 **${prefix}rainbow** - Запустить изменение цвета на роли Multicolor.
 **${prefix}stop** - Остановить изменение цвета.
 **${prefix}creator** - Узнать создателя бота.
@@ -228,6 +227,8 @@ client.on('message', message => {
 
     if (message.author.id !== creator) return;
 
+    if (command === 'invite') message.channel.send('Пригласить бота:\nhttps://discordapp.com/oauth2/authorize?client_id=472048383075549186&scope=bot&permissions=268520448');
+    
     if (command === 'block') {
         blocked.add(args[0]);
         succ(`**${client.users.get(args[0]).tag}** Успешно заблокирован`)
