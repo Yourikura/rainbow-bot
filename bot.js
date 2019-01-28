@@ -40,48 +40,6 @@ client.on('ready', () => {
     console.log(`Запущен. Сервера: ${client.guilds.size}`);
 })
 
-    client.on('guildCreate', (guild) => {
-        const embed = new Discord.RichEmbed()
-        .setTitle(`Я пришел :inbox_tray: на сервер ${guild.name}`)
-        .setColor('55ff55')
-        .setDescription(`Инфа:
-Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-Основатель: **${guild.owner} (\`${guild.owner.user.tag}\`)**
-Количество участников: **${guild.memberCount}**
-Роли: **${guild.roles.size}**
-Каналы: **${guild.channels.size}**
-Создана: **${guild.createdAt.toString().slice(4, -41)}**
-        `)
-        .setThumbnail(guild.iconURL)
-        .setFooter(`Это наш ${client.guilds.size}-ый сервер!`)
-        .setTimestamp()
-        send('520181376352256002', {embed});
-        client.user.setActivity(`${prefix}help`,{ type: 'PLAYING' });
-        let channels = guild.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(guild.members.get(client.user.id)).has('SEND_MESSAGES'));
-    if (channels.size > 0) channels.first().send('Данный бот приватный');
-    guild.leave().catch();
-    });
-    client.on('guildDelete', (guild) => {
-        if (rainbowOn.has(guild.id)) rainbowOn.delete(guild.id);
-        if (rainbowRole.has(guild.id)) rainbowRole.delete(guild.id);
-        const embed = new Discord.RichEmbed()
-        .setTitle(`Я покинул :outbox_tray: на сервер ${guild.name}`)
-        .setColor('ff5555')
-        .setDescription(`Инфа:
-Акроним и ID: **${guild.nameAcronym} | ${guild.id}**
-Основатель: **${guild.owner} (\`${guild.owner.user.tag}\`)**
-Количество участников: **${guild.memberCount}**
-Роли: **${guild.roles.size}**
-Каналы: **${guild.channels.size}**
-Создана: **${guild.createdAt.toString().slice(4, -41)}**
-        `)
-        .setThumbnail(guild.iconURL)
-        .setFooter(`Ну тупые...`)
-        .setTimestamp()
-        send('520181376352256002', {embed});
-        client.user.setActivity(`${prefix}help`,{ type: 'PLAYING' });
-    });
-
 client.on('message', message => {
     if (message.channel.type !== 'text' || message.author.bot || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return;
     if (blocked.has(message.author.id)) return message.reply('Автор бота отключил вам все команды. Причинами могут быть:\n1. Отправление несуществующего бага\n2. Нарушение правил на официальном севрере');
@@ -97,8 +55,8 @@ client.on('message', message => {
     const embed = new Discord.RichEmbed()
     .setAuthor(message.author.tag, message.author.avatarURL)
     .setColor('55ff55')
-    .setDescription(`Пользователь ${message.author} использовал команду **${prefix+command}** \`${(args[0]? `\`${args.join(' ')}\`` : '')}\` на **${message.guild.name}**`)
-    send('520181421382565903', embed);
+    .setDescription(`Пользователь ${message.author} использовал команду **${prefix+command}** \`${(args[0]? `\`${args.join(' ')}\`` : ' ')}\` на **${message.guild.name}**`)
+    send('539471792591339521', embed);
 
     if (['memes'].includes(command)) {
         const memes = [
@@ -212,7 +170,7 @@ client.on('message', message => {
     if (command === 'bug') {
         if (!args[0]) return message.reply('Не указан баг');
         let bug = args.join(" ");
-        send('520325705905471508', `Баг от \`${message.author.tag}\` (${message.author.id}):\n**${bug}**`);
+        send('539471824325705728', `Баг от \`${message.author.tag}\` (${message.author.id}):\n**${bug}**`);
         succ('Баг успешно отправлен\nВнимание! Если вы написали несуществующий баг, то вам безвозвратно отключат все команды бота!');
     }
     
